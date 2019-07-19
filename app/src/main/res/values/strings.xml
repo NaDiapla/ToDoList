@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">todolist</string>
+    <style name="realm_name">todolist.realm</style>
+
+    <string name="title_hint">제목을 입력하세요</string>
+    <string name="contents_hint">내용을 입력하세요</string>
+
+    <string name="menu_save">저장</string>
+
+    <string name="saving">저장되었습니다.</string>
+</resources>
