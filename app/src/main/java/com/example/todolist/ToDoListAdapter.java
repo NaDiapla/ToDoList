@@ -3,6 +3,7 @@ package com.example.todolist;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,7 @@ public class ToDoListAdapter extends RealmRecyclerViewAdapter<ToDoList, ToDoList
         ViewHolder(View itemView) {
             super(itemView);
             toDoListTitle = itemView.findViewById(R.id.title);
+            toDoListTitle.setTypeface(null, Typeface.BOLD);
             toDoListContents = itemView.findViewById(R.id.contents);
             toDoListModifyDate = itemView.findViewById(R.id.modifyDate);
             toDoListCheckDate = itemView.findViewById(R.id.checkDate);
