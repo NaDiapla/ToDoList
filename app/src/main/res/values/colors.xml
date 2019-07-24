@@ -5,4 +5,5 @@
     <color name="colorAccent">#D81B60</color>
     <color name="colorDark">#000000</color>
     <color name="colorWhite">#ffffff</color>
+    <color name="colorCalendarSelect">#a9dbf0cb</color>
 </resources>

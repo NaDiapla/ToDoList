@@ -19,6 +19,10 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".PopupList"
+            android:theme="@style/PopupTheme">
+        </activity>
+
         <activity android:name=".AddToDoList"
             android:screenOrientation="portrait">
         </activity>

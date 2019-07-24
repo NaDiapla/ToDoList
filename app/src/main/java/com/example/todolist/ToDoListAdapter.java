@@ -88,14 +88,12 @@ public class ToDoListAdapter extends RealmRecyclerViewAdapter<ToDoList, ToDoList
             holder.toDoListContents.setPaintFlags(0);
         }
 
-        holder.layout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        holder.layout.setOnClickListener((v)-> {
                 Intent intent = new Intent(v.getContext(), AddToDoList.class);
                 intent.putExtra("id", id);
+                intent.putExtra("date", modifyDate);
                 v.getContext().startActivity(intent);
                 //notifyItemRangeChanged(position, getItemCount() - position);
-            }
         });
 
         holder.layout.setOnLongClickListener((v)-> {

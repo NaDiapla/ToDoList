@@ -2,6 +2,9 @@
     <string name="app_name">todolist</string>
     <style name="realm_name">todolist.realm</style>
 
+    <string name="main_calendar">달력</string>
+    <string name="main_list">리스트</string>
+
     <string name="title_hint">제목을 입력하세요</string>
     <string name="contents_hint">내용을 입력하세요</string>
 

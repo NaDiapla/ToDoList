@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
@@ -11,8 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.google.android.material.snackbar.Snackbar;
-
+import java.util.Calendar;
 import java.util.Date;
 
 import io.realm.Realm;
@@ -23,6 +23,10 @@ public class AddToDoList extends AppCompatActivity {
     long id;
     LinearLayout layout;
     Toolbar tb;
+    DatePicker datePicker;
+    Date initDate;
+    Date setDate;
+    Calendar calendar = Calendar.getInstance();
     EditText title;
     EditText contents;
 
@@ -35,13 +39,20 @@ public class AddToDoList extends AppCompatActivity {
 
         Intent intent = getIntent();
         id = intent.getLongExtra("id", 0);
+        initDate = (Date)intent.getSerializableExtra("date");
 
+        datePicker = findViewById(R.id.date_picker_add_list);
         layout = findViewById(R.id.add_todolist_layout);
         tb = findViewById(R.id.add_toolbar);
         setSupportActionBar(tb);
 
         title = findViewById(R.id.add_title);
         contents = findViewById(R.id.add_contents);
+
+        calendar.setTime(initDate);
+        setDate = new Date(calendar.getTimeInMillis());
+        datePicker.init(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH),
+                (view, year, monthOfYear, dayOfMonth)->setDate(year, monthOfYear, dayOfMonth));
 
         if (id > 0) {
             realm = Realm.getDefaultInstance();
@@ -82,7 +93,7 @@ public class AddToDoList extends AppCompatActivity {
                         toDoList.setId(nextID);
                         toDoList.setTitle(title.getText().toString());
                         toDoList.setContents(contents.getText().toString());
-                        toDoList.setModifyDate(new Date(System.currentTimeMillis()));
+                        toDoList.setModifyDate(setDate);
                         toDoList.setCheckDate(null);
                         toDoList.setCheckDone(false);
                         realm.insert(toDoList);
@@ -90,13 +101,12 @@ public class AddToDoList extends AppCompatActivity {
                         ToDoList toDoList = realm.where(ToDoList.class).equalTo("id", id).findFirst();
                         toDoList.setTitle(title.getText().toString());
                         toDoList.setContents(contents.getText().toString());
-                        toDoList.setModifyDate(new Date(System.currentTimeMillis()));
+                        toDoList.setModifyDate(setDate);
                     }
                 });
                 realm.beginTransaction();
                 realm.commitTransaction();
                 realm.close();
-                Snackbar.make(layout, getString(R.string.saving), Snackbar.LENGTH_SHORT).show();
                 finish();
                 return true;
 
@@ -107,5 +117,11 @@ public class AddToDoList extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    void setDate(int year, int month, int day) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(year, month, day);
+        this.setDate = new Date(cal.getTimeInMillis());
     }
 }

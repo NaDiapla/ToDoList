@@ -1,81 +1,89 @@
 package com.example.todolist;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
+import android.util.Log;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
-import java.util.ArrayList;
-
-import io.realm.Realm;
-import io.realm.RealmChangeListener;
-import io.realm.RealmConfiguration;
-import io.realm.RealmResults;
-import io.realm.Sort;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 public class MainActivity extends AppCompatActivity {
 
-    Realm realm;
-    ImageView ivAdd;
-    RecyclerView recyclerView;
-    ToDoListAdapter adapter;
+    FragmentManager fragmentManager;
+    FragmentTransaction fragmentTransaction;
+    FragmentCalendar fragmentCalendar;
+    FragmentToDoList fragmentToDoList;
+
+    RelativeLayout lCalendar;
+    RelativeLayout lList;
+
+    ImageView ivCalendar;
+    ImageView ivList;
+    TextView tvCalendar;
+    TextView tvList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.main_activity);
 
-        ivAdd = findViewById(R.id.btn_add);
-        ivAdd.setOnClickListener(mClickListener);
+        lCalendar = findViewById(R.id.switch_calendar);
+        lList = findViewById(R.id.switch_list);
+        lCalendar.setOnClickListener(mClickListener);
+        lList.setOnClickListener(mClickListener);
 
-        recyclerView = findViewById(R.id.rvTodolist);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        ivCalendar = findViewById(R.id.iv_calendar);
+        ivList = findViewById(R.id.iv_list);
+        tvCalendar = findViewById(R.id.tv_calendar);
+        tvList = findViewById(R.id.tv_list);
 
-        realm = Realm.getDefaultInstance();
-        setRecyclerView();
-
-        realm.addChangeListener(new RealmChangeListener<Realm>() {
-            @Override
-            public void onChange(Realm realm) {
-                adapter.notifyDataSetChanged();
-            }
-        });
+        fragmentCalendar = new FragmentCalendar(this);
+        fragmentToDoList = new FragmentToDoList(this);
+        setFragment(R.id.switch_calendar);
     }
 
     @Override
-    protected void onDestroy(){
+    protected void onDestroy() {
         super.onDestroy();
     }
 
-    ImageView.OnClickListener mClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Intent intent = new Intent(MainActivity.this, AddToDoList.class);
-            startActivity(intent);
+    RelativeLayout.OnClickListener mClickListener = ((v)-> {
+       switch (v.getId()) {
+           case R.id.switch_calendar:
+               setFragment(R.id.switch_calendar);
+               break;
+           case R.id.switch_list:
+               setFragment(R.id.switch_list);
+               break;
+       }
+    });
+
+    public void setFragment(int n) {
+        fragmentManager = getSupportFragmentManager();
+        fragmentTransaction = fragmentManager.beginTransaction();
+
+        switch (n) {
+            case R.id.switch_calendar:
+                ivCalendar.setImageResource(R.drawable.calendar_icon_p);
+                tvCalendar.setTextColor(getColor(R.color.colorPrimary));
+                ivList.setImageResource(R.drawable.list_icon);
+                tvList.setTextColor(getColor(R.color.colorDark));
+                fragmentTransaction.replace(R.id.main_frame, fragmentCalendar);
+                fragmentTransaction.commit();
+                break;
+            case R.id.switch_list:
+                ivCalendar.setImageResource(R.drawable.calendar_icon);
+                tvCalendar.setTextColor(getColor(R.color.colorDark));
+                ivList.setImageResource(R.drawable.list_icon_p);
+                tvList.setTextColor(getColor(R.color.colorPrimary));
+                fragmentTransaction.replace(R.id.main_frame, fragmentToDoList);
+                fragmentTransaction.commit();
         }
-    };
-
-    private void setRecyclerView() {
-        //ToDoListAdapter adapter = new ToDoListAdapter(realm.where(ToDoList.class).findAll());
-        RealmResults<ToDoList> toDoLists = realm.where(ToDoList.class)
-                .findAll().sort("checkDone", Sort.ASCENDING, "id", Sort.ASCENDING);
-        adapter = new ToDoListAdapter(toDoLists);
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(adapter);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-
-        ItemTouchHelper.Callback callback = new ItemTouchHelperCallback(adapter);
-        ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
-        touchHelper.attachToRecyclerView(recyclerView);
     }
+
 
 }
