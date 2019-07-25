@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.fragment.app.Fragment;
 
@@ -31,6 +32,7 @@ public class FragmentCalendar extends Fragment {
 
     Context context;
     MaterialCalendarView materialCalendarView;
+    ImageView ivAdd;
     Realm realm;
     HashSet<CalendarDay> modifyDates;
 
@@ -42,6 +44,8 @@ public class FragmentCalendar extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v =  inflater.inflate(R.layout.calendar, container, false);
         materialCalendarView = v.findViewById(R.id.calender);
+        ivAdd = v.findViewById(R.id.btn_add_calendar);
+        ivAdd.setOnClickListener(mClickListener);
 
         materialCalendarView.state().edit()
                 .setFirstDayOfWeek(Calendar.SUNDAY)
@@ -49,14 +53,18 @@ public class FragmentCalendar extends Fragment {
 
         modifyDates = new HashSet<>();
         realm = Realm.getDefaultInstance();
-        RealmResults<ToDoList> toDoLists = realm.where(ToDoList.class).distinct("modifyDate").findAll();
+        RealmResults<ToDoList> toDoLists = realm
+                .where(ToDoList.class)
+                .equalTo("checkDone", false)
+                .distinct("modifyDate")
+                .findAll();
         for (ToDoList tDL : toDoLists) {
             modifyDates.add(CalendarDay.from(tDL.getModifyDate()));
         }
         realm.addChangeListener((r)-> setDecorator());
 
         DateFormatTitleFormatter dateFormatTitleFormatter = new DateFormatTitleFormatter(
-                new SimpleDateFormat("yyyy년 MM", Locale.getDefault())
+                new SimpleDateFormat("yyyy년 MM월", Locale.getDefault())
         );
         materialCalendarView.setTitleFormatter(dateFormatTitleFormatter);
 
@@ -84,6 +92,7 @@ public class FragmentCalendar extends Fragment {
                 intent.putExtra("date", date.getDate());
                 startActivity(intent);
             }
+            materialCalendarView.clearSelection();
         });
 
         return v;
@@ -99,7 +108,11 @@ public class FragmentCalendar extends Fragment {
     public void setDecorator() {
         HashSet<CalendarDay> days = new HashSet<>();
         Realm rl = Realm.getDefaultInstance();
-        RealmResults<ToDoList> toDoLists = rl.where(ToDoList.class).distinct("modifyDate").findAll();
+        RealmResults<ToDoList> toDoLists = rl
+                .where(ToDoList.class)
+                .equalTo("checkDone", false)
+                .distinct("modifyDate")
+                .findAll();
         for (ToDoList tDL : toDoLists) {
             days.add(CalendarDay.from(tDL.getModifyDate()));
         }
@@ -112,4 +125,10 @@ public class FragmentCalendar extends Fragment {
                 new ToDoListDecorator(days)
         );
     }
+
+    ImageView.OnClickListener mClickListener = (v)-> {
+        Intent intent = new Intent(getActivity(), AddToDoList.class);
+        intent.putExtra("date", new Date(System.currentTimeMillis()));
+        startActivity(intent);
+    };
 }

@@ -1,9 +1,7 @@
 package com.example.todolist;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 

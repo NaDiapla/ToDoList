@@ -38,7 +38,7 @@ public class FragmentToDoList extends Fragment {
 
         View v = inflater.inflate(R.layout.todolist, container, false);
 
-        ivAdd = v.findViewById(R.id.btn_add);
+        ivAdd = v.findViewById(R.id.btn_add_list);
         ivAdd.setOnClickListener(mClickListener);
 
         recyclerView = v.findViewById(R.id.rv_todolist);
