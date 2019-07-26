@@ -34,6 +34,7 @@ public class FragmentCalendar extends Fragment {
     MaterialCalendarView materialCalendarView;
     ImageView ivAdd;
     Realm realm;
+    RealmResults<ToDoList> toDoLists;
     HashSet<CalendarDay> modifyDates;
 
     public FragmentCalendar(Context context) {
@@ -53,7 +54,7 @@ public class FragmentCalendar extends Fragment {
 
         modifyDates = new HashSet<>();
         realm = Realm.getDefaultInstance();
-        RealmResults<ToDoList> toDoLists = realm
+        toDoLists = realm
                 .where(ToDoList.class)
                 .equalTo("checkDone", false)
                 .distinct("modifyDate")
@@ -105,18 +106,11 @@ public class FragmentCalendar extends Fragment {
         realm.close();
     }
 
-    public void setDecorator() {
+    private void setDecorator() {
         HashSet<CalendarDay> days = new HashSet<>();
-        Realm rl = Realm.getDefaultInstance();
-        RealmResults<ToDoList> toDoLists = rl
-                .where(ToDoList.class)
-                .equalTo("checkDone", false)
-                .distinct("modifyDate")
-                .findAll();
         for (ToDoList tDL : toDoLists) {
             days.add(CalendarDay.from(tDL.getModifyDate()));
         }
-        rl.close();
         materialCalendarView.removeDecorators();
         materialCalendarView.addDecorators(
                 new SundayDecorator(),

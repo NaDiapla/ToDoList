@@ -3,6 +3,7 @@ package com.example.todolist;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,6 +69,7 @@ public class FragmentToDoList extends Fragment {
         RealmResults<ToDoList> toDoLists = realm.where(ToDoList.class)
                 .findAll().sort("checkDone", Sort.ASCENDING, "modifyDate", Sort.ASCENDING);
         adapter = new ToDoListAdapter(toDoLists);
+        //adapter.setHasStableIds(true);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         recyclerView.setAdapter(adapter);

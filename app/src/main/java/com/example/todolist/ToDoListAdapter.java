@@ -47,7 +47,7 @@ public class ToDoListAdapter extends RealmRecyclerViewAdapter<ToDoList, ToDoList
 
     public ToDoListAdapter(OrderedRealmCollection<ToDoList> data) {
         super(data, true);
-        setHasStableIds(true);
+        //setHasStableIds(true);
     }
 
     // onCreateViewHolder(): Item View를 위한 View Holder 객체를 생성하여 리턴
@@ -93,7 +93,6 @@ public class ToDoListAdapter extends RealmRecyclerViewAdapter<ToDoList, ToDoList
                 intent.putExtra("id", id);
                 intent.putExtra("date", modifyDate);
                 v.getContext().startActivity(intent);
-                //notifyItemRangeChanged(position, getItemCount() - position);
         });
 
         holder.layout.setOnLongClickListener((v)-> {
@@ -110,15 +109,22 @@ public class ToDoListAdapter extends RealmRecyclerViewAdapter<ToDoList, ToDoList
             realm.beginTransaction();
             realm.commitTransaction();
             realm.close();
-            //notifyItemRangeChanged(position, getItemCount() - position);
+            // notify 방안 고민
+            /*if (!toDoList.getCheckDone()) {
+                notifyItemMoved(position, getItemCount()-1);
+            } else {
+                notifyDataSetChanged();
+            }*/
             return true;
         });
     }
 
-    @Override
+    // setHasStableIds(), getItemID(int index) 시 리스트가 화면 크기보다 커졌을 때 Item 위치 변경하면 update되지 않음
+    // 해결방안 고민
+    /*@Override
     public long getItemId(int index) {
         return getItem(index).getId();
-    }
+    }*/
 
     @Override
     public boolean onItemMove(int fromPosition, int toPosition) {
@@ -136,5 +142,7 @@ public class ToDoListAdapter extends RealmRecyclerViewAdapter<ToDoList, ToDoList
         realm.beginTransaction();
         realm.commitTransaction();
         realm.close();
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, getItemCount());
     }
 }

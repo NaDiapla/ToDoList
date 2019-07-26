@@ -54,17 +54,24 @@ public class AddToDoList extends AppCompatActivity {
         datePicker.init(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH),
                 (view, year, monthOfYear, dayOfMonth)->setDate(year, monthOfYear, dayOfMonth));
 
+        realm = Realm.getDefaultInstance();
         if (id > 0) {
-            realm = Realm.getDefaultInstance();
             RealmQuery<ToDoList> query = realm.where(ToDoList.class).equalTo("id", id);
             ToDoList results = query.findFirst();
             title.setText(results.getTitle());
             contents.setText(results.getContents());
         }
 
+        //뒤로가기
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         getSupportActionBar().setTitle("");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        realm.close();
     }
 
     @Override
@@ -79,7 +86,6 @@ public class AddToDoList extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.menu_save:
 
-                realm = Realm.getDefaultInstance();
                 realm.executeTransaction((realm)-> {
                     if (id == 0) {   // Insert
                         Number currentID = realm.where(ToDoList.class).max("id");
@@ -106,7 +112,6 @@ public class AddToDoList extends AppCompatActivity {
                 });
                 realm.beginTransaction();
                 realm.commitTransaction();
-                realm.close();
                 finish();
                 return true;
 
